@@ -199,6 +199,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.QueueIn", "02Plugins
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.QueueOut", "02Plugins\009变量工具\Plugin.QueueOut\Plugin.QueueOut.csproj", "{B53C98CE-C553-443B-927F-B2386A0BA3E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.CameraSmartOne", "04Camera\Plugin.CameraSmartOne\Plugin.CameraSmartOne.csproj", "{C9D1A9DE-E6C2-4690-85CA-922A0C548251}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -823,6 +825,14 @@ Global
 		{B53C98CE-C553-443B-927F-B2386A0BA3E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B53C98CE-C553-443B-927F-B2386A0BA3E0}.Release|x86.ActiveCfg = Release|Any CPU
 		{B53C98CE-C553-443B-927F-B2386A0BA3E0}.Release|x86.Build.0 = Release|Any CPU
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Debug|x86.ActiveCfg = Debug|x86
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Debug|x86.Build.0 = Debug|x86
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Release|x86.ActiveCfg = Release|x86
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -920,6 +930,7 @@ Global
 		{3DD33B37-B593-45A6-82B0-A34C329C789B} = {AE5C9D54-1368-4E0A-BB61-E02A6891E9FE}
 		{419DEC5A-CC34-4EB0-896F-D0408AC88B0A} = {82C4275F-A4AF-4B1D-8285-ACF89501EC94}
 		{B53C98CE-C553-443B-927F-B2386A0BA3E0} = {82C4275F-A4AF-4B1D-8285-ACF89501EC94}
+		{C9D1A9DE-E6C2-4690-85CA-922A0C548251} = {196A3FA1-D7B1-4D48-92F1-D6BCA0C1163A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D3CA5C80-BBBA-46E4-A469-24D7F763EF41}
