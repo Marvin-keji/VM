@@ -273,6 +273,9 @@
     <Compile Include="Dialogs\Views\EditRemarksView.xaml.cs">
       <DependentUpon>EditRemarksView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\Views\IPInputDialog.xaml.cs">
+      <DependentUpon>IPInputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Events\HardwareChangedEvent.cs" />
     <Compile Include="Events\ModuleOutChangedEvent.cs" />
     <Compile Include="Events\ProjStopEvent.cs" />
@@ -491,6 +494,10 @@
     <Page Include="Dialogs\Views\EncryptionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\Views\IPInputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\Views\LoadingView.xaml">
       <Generator>MSBuild:Compile</Generator>

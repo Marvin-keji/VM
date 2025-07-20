@@ -1,6 +1,5 @@
 ﻿using HalconDotNet;
 using Microsoft.SqlServer.Server;
-using OPTExtLibrary;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,24 +41,23 @@ namespace Plugin.CameraSmartOne
         public override List<CameraInfoModel> SearchCameras()
         {
             List<CameraInfoModel> _CamInfoList = new List<CameraInfoModel>();
-            List<ICameraInfo> allCameras = OPTEnumerator.GetCameras();
-            foreach (ICameraInfo item in allCameras)
-            {
+           
+            
                 CameraInfoModel mCameraInfo = new CameraInfoModel();
-                mCameraInfo.SerialNO = item.SerialNumber;//[CameraInfoKey.SerialNumber];
+                mCameraInfo.SerialNO = "0";//[CameraInfoKey.SerialNumber];
                 try
                 {
-                    mCameraInfo.CameraIP = item.SerialNumber;//[CameraInfoKey.DeviceIpAddress];
+                    mCameraInfo.CameraIP = "192.168.0.199";//[CameraInfoKey.DeviceIpAddress];
                 }
                 catch
                 {
                     mCameraInfo.CameraIP = "00:00:00:00";
                 }
-                mCameraInfo.CamName = "OPT" + item.Name;// [CameraInfoKey.SerialNumber];
-                mCameraInfo.MaskName = "OPT" + item.SerialNumber;// [CameraInfoKey.SerialNumber];
+                mCameraInfo.CamName = "SmartOne" + "0";// [CameraInfoKey.SerialNumber];
+                mCameraInfo.MaskName = "SmartOne" + "0";// [CameraInfoKey.SerialNumber];
                 mCameraInfo.Connected = false;
                 _CamInfoList.Add(mCameraInfo);
-            }
+           
             return _CamInfoList;
         }
         /// <summary>
@@ -71,7 +69,7 @@ namespace Plugin.CameraSmartOne
             {
                 base.ConnectDev();
                 DisConnectDev();// 如果设备已经连接先断开
-                mCamera = OPTEnumerator.GetCameraByKey($"OPT Machine Vision:{SerialNo}");
+                mCamera = HOperatorSet.OpenSocketConnect();
                 if (mCamera == null) { return; }
                 mCamera.Open();
                

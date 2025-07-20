@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using VM.Halcon;
 using VM.Start.Common;
 using VM.Start.Core;
+using VM.Start.Dialogs.Views;
 using VM.Start.Events;
 using VM.Start.Models;
 using VM.Start.Services;
@@ -75,15 +76,18 @@ namespace VM.Start.Views
                 mWindowH = new VMHWindowControl();
                 winFormHost.Child = mWindowH;
             }
-        }        
+        }
         private void cmbCameraType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbCameraType.SelectedIndex < 0) return;
-            PluginsInfo pluginsInfo = PluginService.PluginDic_Camera[cmbCameraType.SelectedItem.ToString()];
-            CameraBase module = (CameraBase)Activator.CreateInstance(pluginsInfo.ModuleType);
-            CameraSetViewModel.Ins.CameraNos = module.SearchCameras();
-            cmbCameraNo.ItemsSource = CameraSetViewModel.Ins.CameraNos;
-            cmbCameraNo.SelectedIndex = 0;
+           
+           
+                PluginsInfo pluginsInfo = PluginService.PluginDic_Camera[cmbCameraType.SelectedItem.ToString()];
+                CameraBase module = (CameraBase)Activator.CreateInstance(pluginsInfo.ModuleType);
+                CameraSetViewModel.Ins.CameraNos = module.SearchCameras();
+                cmbCameraNo.ItemsSource = CameraSetViewModel.Ins.CameraNos;
+                cmbCameraNo.SelectedIndex = 0;
+           
         }
         private void dg_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
@@ -93,5 +97,31 @@ namespace VM.Start.Views
 
         #endregion
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (cmbCameraType.SelectedItem.ToString() == "SmartOne相机")
+            {
+
+           
+            var dialog = new IPInputDialog();
+            dialog.Owner = this; // 设置当前窗口为弹窗的所有者
+
+            // 显示弹窗（模式对话框）
+            dialog.ShowDialog();
+
+            // 获取输入的IP地址
+            if (!string.IsNullOrEmpty(dialog.IPAddress))
+            {
+                MessageBox.Show($"您输入的IP地址是: {dialog.IPAddress}");
+                // 在这里处理获取到的IP地址
+
+            }
+            else
+            {
+                MessageBox.Show("操作已取消");
+            }
+            }
+        }
     }
 }

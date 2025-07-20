@@ -91,7 +91,7 @@
                                 <Button  Content="&#xe635;" Width="30" Height="26" FontFamily="{DynamicResource iconfont}" FontSize="18" 
                                                  Background="{StaticResource MahApps.Brushes.Accent4}"
                                                  BorderBrush="{StaticResource MahApps.Brushes.Accent4}"
-                                                 ToolTip="修改" Command="{Binding DataOperateCommand}" CommandParameter="Modify"/>
+                                                 ToolTip="修改" Command="{Binding DataOperateCommand}" CommandParameter="Modify" Click="Button_Click"/>
                             </StackPanel>
                             <DataGrid Grid.Row="2" AutoGenerateColumns="False" x:Name="dg"
                                                   EnableColumnVirtualization="True"
