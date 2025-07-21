@@ -69,7 +69,7 @@ namespace Plugin.CameraSmartOne
             {
                 base.ConnectDev();
                 DisConnectDev();// 如果设备已经连接先断开
-                mCamera = HOperatorSet.OpenSocketConnect();
+                mCamera = HOperatorSet.();
                 if (mCamera == null) { return; }
                 mCamera.Open();
                
