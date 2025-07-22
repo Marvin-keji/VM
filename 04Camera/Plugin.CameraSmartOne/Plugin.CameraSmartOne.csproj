@@ -53,10 +53,6 @@
     <Reference Include="halcondotnet">
       <HintPath>..\..\00Exe\Plugins\halcondotnet.dll</HintPath>
     </Reference>
-    <Reference Include="OPTExtLibrary, Version=1.0.0.31445, Culture=neutral, PublicKeyToken=407bb547be8622a9, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\00Exe\Plugins\OPTExtLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />

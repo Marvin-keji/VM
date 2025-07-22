@@ -18,7 +18,9 @@ using VM.Start.Common.Enums;
 using VM.Start.Common.Provide;
 using VM.Start.Core;
 using VM.Start.Models;
-
+using System.Timers;
+using System.Threading;
+using Timer = System.Timers.Timer;
 namespace Plugin.CameraSmartOne
 {
     [Category("相机")]
@@ -28,22 +30,38 @@ namespace Plugin.CameraSmartOne
     {
         [NonSerialized]
         private Stopwatch mStopwatch = new Stopwatch();
-        [NonSerialized]
-        private OPTExtLibrary.IDevice mCamera;
+
+        
         /// <summary> >= Sfnc2_0_0,说明是ＵＳＢ３的相机</summary>
         [NonSerialized]
-        static Version Sfnc2_0_0 = new Version(2, 0, 0);
-
+        Version Sfnc2_0_0 = new Version(2, 0, 0);
+        private Timer timer;
+        HTuple hv_Socket = new HTuple();
         private Bitmap _image = null;
-        
+        CameraInfoModel mCameraInfo;
+
         public CameraSmartOne() : base() { }
+
+        private void InitializeTimer()
+        {
+            timer = new Timer(10); // 设置间隔时间为1000毫秒（1秒）
+            timer.Elapsed += OnTimedEvent; // 定时器触发时调用的事件
+            timer.AutoReset = true; // 设置为true表示重复触发，false为只触发一次
+            timer.Enabled = true; // 启动定时器
+        }
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            // 这里编写定时器触发时需要执行的代码
+            
+            OnImageGrabbed();
+        }
         /// <summary>搜索相机</summary>
         public override List<CameraInfoModel> SearchCameras()
         {
             List<CameraInfoModel> _CamInfoList = new List<CameraInfoModel>();
-           
-            
-                CameraInfoModel mCameraInfo = new CameraInfoModel();
+
+            HOperatorSet.GenEmptyObj(out ho_ImageInt2);
+            mCameraInfo = new CameraInfoModel();
                 mCameraInfo.SerialNO = "0";//[CameraInfoKey.SerialNumber];
                 try
                 {
@@ -60,6 +78,7 @@ namespace Plugin.CameraSmartOne
            
             return _CamInfoList;
         }
+        static HObject ho_ImageInt2 = null;
         /// <summary>
         /// 连接相机
         /// </summary>
@@ -69,50 +88,56 @@ namespace Plugin.CameraSmartOne
             {
                 base.ConnectDev();
                 DisConnectDev();// 如果设备已经连接先断开
-                mCamera = HOperatorSet.();
-                if (mCamera == null) { return; }
-                mCamera.Open();
-               
+                //mCamera = HOperatorSet.();
+                //if (mCamera == null) { return; }
+                //mCamera.Open();
+
                 //CameraIP = mCamera.CameraInfo.Version;
-
-
-                /* 打开Software Trigger */
-                mCamera.TriggerSet.Open(OPTTriggerSourceEnum.Software);
-
-                /* 设置图像格式 */
-                using (IEnumParam p = mCamera.ParameterCollection[OPTParamSet.ImagePixelFormat])
+                try
                 {
-                    bool RES = p.SetValue("BayerRG8");//Mono8 //BayerGB8
+                    hv_Socket.Dispose();
+                    HOperatorSet.OpenSocketConnect("127.0.0.1", 3000, new HTuple(), new HTuple(),
+                        out hv_Socket);
                 }
+                catch (Exception e)
+                {
+
+                    MessageBox.Show(e.ToString());
+                    return;
+                }
+
+                Thread.Sleep(100);
+                /* 打开Software Trigger */
+               
+                InitializeTimer();
+                /* 设置图像格式 */
+
 
                 /* 设置缓存个数为8（默认值为16） */
-                mCamera.StreamGrabber.SetBufferCount(16);
+                //mCamera.StreamGrabber.SetBufferCount(16);
 
-                using (IBooleanParam p = mCamera.ParameterCollection[OPTParamSet.ImageReverseX])
-                {
-                    p.SetValue(true);
-                }
-
-                using (IBooleanParam p = mCamera.ParameterCollection[OPTParamSet.ImageReverseY])
-                {
-                    p.SetValue(true);
-                }
+                
                 /* 注册码流回调事件 */
-                mCamera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
-                mCamera.StreamGrabber.GrabStarted += OnGrabStarted;
-                mCamera.StreamGrabber.GrabStoped += OnGrabStopped;
-                mCamera.ConnectionLost += OnConnectionLost;
+                //mCamera.StreamGrabber.ImageGrabbed += OnImageGrabbed;
+                //mCamera.StreamGrabber.GrabStarted += OnGrabStarted;
+                //mCamera.StreamGrabber.GrabStoped += OnGrabStopped;
+                //mCamera.ConnectionLost += OnConnectionLost;
                 /* 开启码流 */
                 int times = 1;
-            reOpen:
-                if (!mCamera.GrabUsingGrabLoopThread())
-                {
-                    times++;
-                    if (times <= 2)
-                        goto reOpen;
-                    //Status = ("开启码流失败");
-                    return ;
-                }
+            //reOpen:
+            //    try
+            //    {
+            //        hv_Socket.Dispose();
+            //        HOperatorSet.OpenSocketConnect(mCameraInfo.CameraIP, 3000, new HTuple(), new HTuple(),
+            //            out hv_Socket);
+            //        InitializeTimer();
+            //    }
+            //    catch (Exception e)
+            //    {
+
+            //        MessageBox.Show(e.ToString());
+            //        return;
+            //    }
 
                 //if (mCamera.CameraInfo.Version < Sfnc2_0_0.)
                 //{
@@ -160,13 +185,13 @@ namespace Plugin.CameraSmartOne
         {
             try
             {
-                if (mCamera != null && mCamera.IsOpen)
-                {
-                    mCamera.StreamGrabber.ImageGrabbed -= OnImageGrabbed;         /* 反注册回调 */
-                    mCamera.ShutdownGrab();                                       /* 停止码流 */
-                    mCamera.Close();
+                //if (mCamera != null && mCamera.IsOpen)
+                //{
+                //    //mCamera.StreamGrabber.ImageGrabbed -= OnImageGrabbed;         /* 反注册回调 */
+                //    mCamera.ShutdownGrab();                                       /* 停止码流 */
+                //    mCamera.Close();
                     Connected = false;/* 关闭相机 */
-                }
+                //}
                 //if (mCamera != null)
                 //{
                 //    mCamera.Close();
@@ -188,21 +213,21 @@ namespace Plugin.CameraSmartOne
         {
             try
             {
-                if (mCamera == null || mCamera.IsOpen == false)
-                {
-                    ConnectDev();
-                    if (mCamera == null || mCamera.IsOpen == false)
-                    {
-                        Logger.AddLog(Remarks + ":" + "相机采集:重连失败!" + mCamera.ToString() + " " + mCamera.IsOpen.ToString(), eMsgType.Error);
-                        return false;
-                    }
-                }
+                //if (mCamera == null || mCamera.IsOpen == false)
+                //{
+                //    ConnectDev();
+                //    //if (mCamera == null || mCamera.IsOpen == false)
+                //    //{
+                //    //    Logger.AddLog(Remarks + ":" + "相机采集:重连失败!" + mCamera.ToString() + " " + mCamera.IsOpen.ToString(), eMsgType.Error);
+                //    //    return false;
+                //    //}
+                //}
                 if (byHand)
                 {
                     //设置触发模式
                     SetTriggerMode(eTrigMode.软触发);
                     //拍一张
-                    mCamera.ExecuteSoftwareTrigger();
+                    //mCamera.ExecuteSoftwareTrigger();
                     //mCamera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
                     //还原之前的触发模式
                     SetTriggerMode(TrigMode);
@@ -213,7 +238,7 @@ namespace Plugin.CameraSmartOne
                     {
                         //SignalWait.WaitOne();
                         //拍一张
-                        mCamera.ExecuteSoftwareTrigger();
+                        //mCamera.ExecuteSoftwareTrigger();
                         //mCamera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.SingleFrame);
                         //mCamera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
                         //SignalWait.Reset();
@@ -223,7 +248,7 @@ namespace Plugin.CameraSmartOne
                         GetSignalWait.Reset();
                         //SetTriggerMode(TrigMode.软触发);
                         //拍一张
-                        mCamera.ExecuteSoftwareTrigger();
+                        //mCamera.ExecuteSoftwareTrigger();
                         //mCamera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.SingleFrame);
                         //mCamera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
                         GetSignalWait.WaitOne(2000);
@@ -304,12 +329,7 @@ namespace Plugin.CameraSmartOne
         {
             if (Width > 100 & Width <= WidthMax)
             {
-                using (IIntegraParam p = mCamera.ParameterCollection[OPTParamSet.ImageWidth])
-                {
-                    p.SetValue(Width);
-                    if (ReadParaImageW() != Width)
-                        return ;
-                }
+                return;
                // mCamera.ParameterCollection[OPTParamSet.ExposureTime];
             }
         }
@@ -318,12 +338,8 @@ namespace Plugin.CameraSmartOne
         {
             if (Height > 100 & Height <= WidthMax)
             {
-                using (IIntegraParam p = mCamera.ParameterCollection[OPTParamSet.ImageHeight])
-                {
-                    p.SetValue(Height);
-                    if (ReadParaImageW() != Height)
-                        return;
-                }
+                
+                return ;
                 // mCamera.ParameterCollection[OPTParamSet.ExposureTime];
             }
            
@@ -334,12 +350,7 @@ namespace Plugin.CameraSmartOne
             try
             {
                 /* 设置增益 */
-                using (IFloatParam p = mCamera.ParameterCollection[OPTParamSet.GainRaw])
-                {
-                    p.SetValue(gainRaw);
-                    if (ReadParaGain() != gainRaw)
-                        return ;
-                }
+                
                 return ;
             }
             catch (Exception ex)
@@ -364,24 +375,24 @@ namespace Plugin.CameraSmartOne
         {
             try
             {
-                if (mCamera == null) return false;
+                //if (mCamera == null) return false;
                 //如果是实时采集 则先停止
-                if (mCamera.StreamGrabber.IsStart )
+                //if (mCamera.StreamGrabber.IsStart )
                 {
-                    StopGrab();
+                    //StopGrab();
                 }
                 switch (_TrigMode)
                 {
                     case eTrigMode.内触发:   // no acquisition
                         {
                             //mCamera.TriggerSet.Open(OPTTriggerSourceEnum.);
-                            mCamera.TriggerSet.Open(OPTTriggerSourceEnum.Line1);
+                           // mCamera.TriggerSet.Open(OPTTriggerSourceEnum.Line1);
                             StopGrab();
                             break;
                         }
                     case eTrigMode.软触发:   // freerunning
                         {
-                            mCamera.TriggerSet.Open(OPTTriggerSourceEnum.Software);
+                            //mCamera.TriggerSet.Open(OPTTriggerSourceEnum.Software);
                             StartGrab();
                             break;
                         }
@@ -389,13 +400,13 @@ namespace Plugin.CameraSmartOne
                         {
                            // mCamera.TriggerSet.
 
-                            StopGrab();
+                            //StopGrab();
                             break;
                         }
                     case eTrigMode.下降沿:   // Software trigger
                         {
 
-                            StopGrab();
+                            //StopGrab();
                             break;
                         }
                 }
@@ -412,54 +423,34 @@ namespace Plugin.CameraSmartOne
         public double ReadParaImageW()
         {
             /* 设置曝光 */
-            using (IIntegraParam p = mCamera.ParameterCollection[OPTParamSet.ImageWidth])
-            {
-                double temp = p.GetValue();
-                return temp;
-            }
+            return 0;
 
         }
 
         public double ReadParaImageH()
         {
             /* 设置曝光 */
-            using (IIntegraParam p = mCamera.ParameterCollection[OPTParamSet.ImageHeight])
-            {
-                double temp = p.GetValue();
-                return temp;
-            }
+            return 0;
 
         }
 
         public double ReadParaExposure()
         {
             /* 设置曝光 */
-            using (IFloatParam p = mCamera.ParameterCollection[OPTParamSet.ExposureTime])
-            {
-                double temp = p.GetValue();
-                return temp;
-            }
+            return 0;
 
         }
 
         public double ReadParaGain()
         {
             /* 设置增益 */
-            using (IFloatParam p = mCamera.ParameterCollection[OPTParamSet.GainRaw])
-            {
-                double temp = p.GetValue();
-                return temp;
-            }
+            return 0;
         }
 
         public double ReadParaGama()
         {
             /* 设置伽马 */
-            using (IFloatParam p = mCamera.ParameterCollection[OPTParamSet.Gamma])
-            {
-                double temp = p.GetValue();
-                return temp;
-            }
+            return 0;
         }
         #region 相机事件
         /// <summary>
@@ -496,13 +487,25 @@ namespace Plugin.CameraSmartOne
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnImageGrabbed(object sender, ImageEvent e)
+        private void OnImageGrabbed()
         {
-            var frame = e.GrabResult.Copy();
 
-            _image = frame.ToBitmap(true);
-            Image = new HImage(BitmapToHObjectColor(_image));
-            EventWait.Set();
+            if (ho_ImageInt2 != null)
+            {
+                ho_ImageInt2.Dispose();
+            }
+            try
+            {
+                HOperatorSet.ReceiveImage(out ho_ImageInt2, hv_Socket);
+                Image = new HImage(ho_ImageInt2);
+            }
+            catch (Exception)
+            {
+
+                timer.Enabled = false;
+            }
+            
+           
         }
         #endregion
         /// <summary>
@@ -510,7 +513,7 @@ namespace Plugin.CameraSmartOne
         /// </summary>
         public void StartGrab()
         {
-            mCamera.StreamGrabber.Start();
+            //mCamera.StreamGrabber.Start();
             //mCamera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             //mCamera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
         }
@@ -519,7 +522,7 @@ namespace Plugin.CameraSmartOne
         /// </summary>
         public void StopGrab()
         {
-            mCamera.StreamGrabber.Stop();
+            //mCamera.StreamGrabber.Stop();
         }
         [OnDeserializing()]
         internal void OnDeSerializingMethod(StreamingContext context)
