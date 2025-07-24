@@ -1792,6 +1792,7 @@ namespace VM.Start.Common
                             pol, //匹配方法设置: ignore_color_polarity"忽略颜色极性  "ignore_global_polarity"忽视全部极性  "ignore_local_polarity"无视局部极性 "use_polarity"使用极性
                             5
                         );
+                        
                         break;
                     case eModelType.灰度模板:
                         ((HNCCModel)TempHandle).CreateNccModel(
